@@ -3,6 +3,7 @@ from .models import Book, Author, Publisher
 from .forms import BookForm, PublisherForm, AuthorForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
+from reviews.forms import ReviewForm
 # Create your views here.
 
 
@@ -15,8 +16,10 @@ def index(request):
 
 def view_book_details(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
+    review_form = ReviewForm()
     return render(request, 'books/book_details.template.html', {
-        'book': book
+        'book': book,
+        'form': review_form
     })
 
 def view_authors(request):

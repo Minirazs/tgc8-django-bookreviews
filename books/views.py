@@ -1,6 +1,8 @@
 from django.shortcuts import render, HttpResponse, redirect, reverse, get_object_or_404
 from .models import Book, Author, Publisher
 from .forms import BookForm, PublisherForm, AuthorForm
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib import messages
 # Create your views here.
 
 
@@ -11,6 +13,11 @@ def index(request):
         'books': all_books
     })
 
+def view_book_details(request, book_id):
+    book = get_object_or_404(Book, pk=book_id)
+    return render(request, 'books/book_details.template.html', {
+        'book': book
+    })
 
 def view_authors(request):
     all_authors = Author.objects.all()
@@ -26,7 +33,7 @@ def view_publishers(request):
         'publishers': all_publishers
     })
 
-
+@login_required
 def create_book(request):
     if request.method == "POST":
         # eqv. request.POST is the same request.form in Flask
@@ -36,8 +43,16 @@ def create_book(request):
         if form.is_valid():
             # actually saving the user's keyed in data to the database
             form.save()
+            messages.success(request, f"New book {form.cleaned_data['title']} has been created")
             # eqv. to 'redirect(url_for(index))' in Flask
             return redirect(reverse(index))
+        
+        else:
+            # if does not have valid values, re-render the form
+            return render(request, 'books/create_book.template.html', {
+                'form': form
+            })
+
     else:
         # create an instance of the BookForm
         create_book_form = BookForm()

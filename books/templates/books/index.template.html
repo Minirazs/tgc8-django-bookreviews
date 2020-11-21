@@ -1,22 +1,18 @@
-{% load static %}
+{% extends 'base.template.html' %}
+{%load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
-</head>
-<body>
-    <h1>Hello World</h1>
+{%block content%}
+    <h1>Books</h1>
+    <p>
+        Here you can see all the books that we have.
+    </p>
     <ul>
-    {% for b in books %}
+        {%for book in books %}
         <li>
-            {{b.title}} - {{b.ISBN}} <a href="{% url 'update_book_route' book_id=b.id %}">Edit</a>
-            <a href="{% url 'delete_book_route' book_id=b.id %}">Delete</a>
+            {{book.title}} 
+            <a href="{% url 'update_book_route' book_id=book.id %}">Edit</a>
+            <a href="{% url 'delete_book_route' book_id=book.id %}">Delete</a>
         </li>
-    {% endfor %}
+        {%endfor%}
     </ul>
-</body>
-</html>
+{%endblock%}

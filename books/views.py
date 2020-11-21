@@ -1,8 +1,9 @@
 from django.shortcuts import render, HttpResponse, redirect, reverse, get_object_or_404
 from .models import Book, Author, Publisher
-from .forms import BookForm, PublisherForm, AuthorForm
+from .forms import BookForm, PublisherForm, AuthorForm, SearchForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
+from django.db.models import Q
 from reviews.forms import ReviewForm
 # Create your views here.
 
@@ -12,6 +13,34 @@ def index(request):
     all_books = Book.objects.all()
     return render(request, 'books/index.template.html', {
         'books': all_books
+    })
+
+def search(request):
+    book_query = Book.objects.all()
+    search_form = SearchForm()
+
+    #create empty query
+    queries = ~Q(pk__in=[])
+
+    #queries = queries & Q(title__icontains=title)
+    # queries = queries & Q(title__icontains="rings")
+    # queries = queries & Q(tags__in=[2, 4])
+
+    if request.GET:
+        if 'title' in request.GET and request.GET['title']:
+            queries = queries & Q(title__icontains=request.GET['title'])
+        
+        if 'genre' in request.GET and request.GET['genre']:
+            queries = queries & Q(genre=request.GET['genre'])
+        
+        if 'tags' in request.GET and request.GET['tags']:
+            queries = queries & Q(tags__in=request.GET['tags'])
+
+    all_books = book_query.filter(queries)
+
+    return render(request, 'books/search.template.html', {
+        'books': all_books,
+        'search_form': search_form
     })
 
 def view_book_details(request, book_id):

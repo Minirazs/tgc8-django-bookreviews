@@ -1,0 +1,24 @@
+{% extends 'base.template.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{%block content%}
+    <h1>Searching</h1>
+    <form method="GET">
+        {{search_form|crispy}}
+        <input type="submit" value="Search" class="btn btn-primary"/>
+    </form>
+
+    <p>
+        Here you can see all the books that you have searched for.
+    </p>
+    <ul>
+        {%for book in books %}
+        <li>
+            {{book.title}} 
+            <a href="{% url 'update_book_route' book_id=book.id %}">Edit</a>
+            <a href="{% url 'delete_book_route' book_id=book.id %}">Delete</a>
+        </li>
+        {%endfor%}
+    </ul>
+{%endblock%}
